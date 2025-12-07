@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.guardian.HelloController">
+
+    <top> <Pane fx:id="toolbar" prefHeight="50.0" style="-fx-background-color: #DDDDDD;" /> </top>
+    <center> <Pane fx:id="drawingPane" style="-fx-background-color: #FFFFFF;" /> </center>
+    <bottom> <Pane fx:id="statusBar" prefHeight="30.0" style="-fx-background-color: #EEEEEE;" /> </bottom>
+
+</BorderPane>
