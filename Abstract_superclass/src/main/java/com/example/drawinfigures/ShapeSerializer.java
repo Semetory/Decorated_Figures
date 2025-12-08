@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 
 public class ShapeSerializer {
 
-    //Сериализация фигуры в строку (для сохранения в *.draw)
+    //Сериализация/переборка/конвертация фигуры в строку для сохранения в некий_файл.draw
     public static String serialize(Shape shape) {
         StringBuilder sb = new StringBuilder();
         if (shape instanceof Rectangle r) {
