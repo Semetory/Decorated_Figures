@@ -22,17 +22,17 @@ public class PngWriter {
         byte[] data = new byte[13];
         writeInt(data, 0, w);
         writeInt(data, 4, h);
-        data[8] = 8;     //bit depth
-        data[9] = 6;     //color type RGBA
-        data[10] = 0;    //compression
-        data[11] = 0;    //filter
-        data[12] = 0;    //interlace
+        data[8] = 8;     //bit глубина
+        data[9] = 6;     //тип записи палитры цвета RGBA
+        data[10] = 0;    //сжатие
+        data[11] = 0;    //фильтр
+        data[12] = 0;    //интерфейс
 
         writeChunk(os, "IHDR", data);
     }
 
     private static void writeIDAT(OutputStream os, int w, int h, byte[] rgba) throws IOException {
-        // Каждая строка PNG должна начинаться с байта фильтра
+        // Каждая строка PNG начинается с байта фильтра
         byte[] raw = new byte[h * (w * 4 + 1)];
         int src = 0;
         int dst = 0;
@@ -44,7 +44,7 @@ public class PngWriter {
             dst += w * 4;
         }
 
-        //Сжимаем через Deflater (zlib)
+        //Сжимаем через Deflater функции (zlib)
         Deflater deflater = new Deflater(6);
         deflater.setInput(raw);
         deflater.finish();
