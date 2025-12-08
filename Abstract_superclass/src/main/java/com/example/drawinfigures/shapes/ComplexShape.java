@@ -26,7 +26,7 @@ public class ComplexShape extends Shape {
 
         gc.beginPath();
         for (PathCommand cmd : commands) {
-            cmd.apply(gc); // выполняем команду пути
+            cmd.apply(gc); 
         }
         gc.fill();
         gc.stroke();
