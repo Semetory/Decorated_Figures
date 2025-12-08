@@ -8,8 +8,8 @@ public class Angle implements Shape {
     public void draw(GraphicsContext gr) {
         gr.setStroke(Color.GRAY);
         gr.setLineWidth(10);
-        gr.strokeLine(25, 25, 250, 25); // горизонтальная линия
-        gr.strokeLine(30, 25, 30, 250); // вертикальная линия
+        gr.strokeLine(25, 25, 250, 25); //положение горизонтальная лини
+        gr.strokeLine(30, 25, 30, 250); //положение вертикальная линия
     }
 }
 
