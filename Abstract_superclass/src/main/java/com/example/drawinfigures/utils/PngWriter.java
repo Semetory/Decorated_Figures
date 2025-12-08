@@ -38,7 +38,7 @@ public class PngWriter {
         int dst = 0;
 
         for (int y = 0; y < h; y++) {
-            raw[dst++] = 0; // filter byte (none)
+            raw[dst++] = 0; // фильтр байховый 0
             System.arraycopy(rgba, src, raw, dst, w * 4);
             src += w * 4;
             dst += w * 4;
