@@ -23,7 +23,7 @@ public class HelloController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Предупреждение");
             alert.setHeaderText(null);
-            alert.setContentText("Введено нечисло или число не из диапазона от 0 до 5!");
+            alert.setContentText("Введено не число или число не из диапазона от 0 до 5");
             alert.showAndWait();
             return;
         }
