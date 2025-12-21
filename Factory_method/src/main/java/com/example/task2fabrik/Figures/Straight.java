@@ -9,7 +9,7 @@ public class Straight implements Shape {
     public void draw(GraphicsContext gr) {
         gr.setStroke(Color.BLUE);
         gr.setLineWidth(5);
-        gr.strokeLine(50, 50, 250, 50); // горизонтальный отрезок
+        gr.strokeLine(50, 50, 250, 50); //horizont
     }
 }
 

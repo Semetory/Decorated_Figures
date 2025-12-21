@@ -9,7 +9,7 @@ public class Square implements Shape {
     public void draw(GraphicsContext gr) {
         gr.setStroke(Color.ORANGE);
         gr.setLineWidth(3);
-        gr.strokeRect(50, 50, 200, 200); // квадрат 200x200
+        gr.strokeRect(50, 50, 200, 200); //квадрат 200 на 200
     }
 }
 

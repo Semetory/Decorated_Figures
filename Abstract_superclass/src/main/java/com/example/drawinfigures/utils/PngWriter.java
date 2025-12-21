@@ -20,6 +20,7 @@ public class PngWriter {
         byte[] data = new byte[13];
         writeInt(data, 0, w);
         writeInt(data, 4, h);
+		
         data[8] = 8;  //bit depth
         data[9] = 6;  //color type RGBA
         data[10] = 0; //compression
@@ -30,19 +31,22 @@ public class PngWriter {
     }
 
     private static void writeIDAT(OutputStream os, int w, int h, byte[] rgba) throws IOException {
+
         //Каждая строка PNG должна начинаться с байта фильтра
         byte[] raw = new byte[h * (w * 4 + 1)];
         int src = 0;
         int dst = 0;
 
         for (int y = 0; y < h; y++) {
-            raw[dst++] = 0;
+
+            raw[dst++] = 0; // фильтр байховый 0
+
             System.arraycopy(rgba, src, raw, dst, w * 4);
             src += w * 4;
             dst += w * 4;
         }
 
-        //Сжимаем через Deflater (zlib)
+        //Сжимаем через Deflater функции (zlib)
         Deflater deflater = new Deflater(6);
         deflater.setInput(raw);
         deflater.finish();
