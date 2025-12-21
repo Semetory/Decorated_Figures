@@ -8,12 +8,14 @@ public class Square extends Shape {
     public double size;
 
     public Square(Color fill, Color stroke,
-                  double x, double y,
-                  double size,
-                  double strokeWidth) {
+                  double x, double y, double size, double strokeWidth) {
 
         super(fill, stroke, x, y, strokeWidth);
+
+        this.y = y;
         this.size = size;
+        this.strokeWidth = strokeWidth;
+
     }
 
     @Override

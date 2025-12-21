@@ -9,9 +9,7 @@ public class PngWriter {
 
     public static void write(OutputStream os, int width, int height, byte[] rgba) throws IOException {
         //PNG сигнатура
-        os.write(new byte[]{
-                (byte) 137, 80, 78, 71, 13, 10, 26, 10
-        });
+        os.write(new byte[]{ (byte) 137, 80, 78, 71, 13, 10, 26, 10 });
 
         writeIHDR(os, width, height);
         writeIDAT(os, width, height, rgba);
@@ -22,23 +20,23 @@ public class PngWriter {
         byte[] data = new byte[13];
         writeInt(data, 0, w);
         writeInt(data, 4, h);
-        data[8] = 8;     //bit depth
-        data[9] = 6;     //color type RGBA
-        data[10] = 0;    //compression
-        data[11] = 0;    //filter
-        data[12] = 0;    //interlace
+        data[8] = 8;  //bit depth
+        data[9] = 6;  //color type RGBA
+        data[10] = 0; //compression
+        data[11] = 0; //filter
+        data[12] = 0; //interlace
 
         writeChunk(os, "IHDR", data);
     }
 
     private static void writeIDAT(OutputStream os, int w, int h, byte[] rgba) throws IOException {
-        // Каждая строка PNG должна начинаться с байта фильтра
+        //Каждая строка PNG должна начинаться с байта фильтра
         byte[] raw = new byte[h * (w * 4 + 1)];
         int src = 0;
         int dst = 0;
 
         for (int y = 0; y < h; y++) {
-            raw[dst++] = 0; // filter byte (none)
+            raw[dst++] = 0;
             System.arraycopy(rgba, src, raw, dst, w * 4);
             src += w * 4;
             dst += w * 4;
@@ -90,4 +88,3 @@ public class PngWriter {
         arr[pos + 3] = (byte) (v & 0xFF);
     }
 }
-

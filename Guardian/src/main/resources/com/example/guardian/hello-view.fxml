@@ -2,11 +2,48 @@
 
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.guardian.HelloController">
 
-    <top> <Pane fx:id="toolbar" prefHeight="50.0" style="-fx-background-color: #DDDDDD;" /> </top>
-    <center> <Pane fx:id="drawingPane" style="-fx-background-color: #FFFFFF;" /> </center>
-    <bottom> <Pane fx:id="statusBar" prefHeight="30.0" style="-fx-background-color: #EEEEEE;" /> </bottom>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.guardian.HelloController"
+            prefHeight="600" prefWidth="800">
+
+    <top>
+        <Pane fx:id="toolbar" prefHeight="50" style="-fx-background-color: #f0f0f0;">
+            <padding>
+                <Insets top="5" right="10" bottom="5" left="10"/>
+            </padding>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Графический редактор" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Separator orientation="VERTICAL" prefHeight="30"/>
+
+                <Button text="Снять выделение" onAction="#clearSelection"/>
+                <Separator orientation="VERTICAL" prefHeight="30"/>
+                <Label text="Инструкция:"/>
+                <Text text="Ctrl + клик - множественное выделение" fill="#666666"/>
+            </HBox>
+        </Pane>
+    </top>
+
+    <center>
+        <Pane fx:id="drawingPane" style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1;">
+        </Pane>
+    </center>
+
+    <bottom>
+        <Pane fx:id="statusBar" prefHeight="30" style="-fx-background-color: #e8e8e8;">
+            <padding>
+                <Insets top="5" right="10" bottom="5" left="10"/>
+            </padding>
+        </Pane>
+    </bottom>
 
 </BorderPane>

@@ -9,8 +9,15 @@ public class Ellipse extends Shape {
 
     public Ellipse(Color fill, Color stroke, double x, double y, double radiusX, double radiusY, double strokeWidth) {
         super(fill, stroke, x, y, strokeWidth);
+
         this.radiusX = radiusX;
         this.radiusY = radiusY;
+
+        this.x = x;
+        this.y = y;
+        this.radiusX = radiusX;
+        this.radiusY = radiusY;
+        this.strokeWidth = strokeWidth;
     }
 
     @Override

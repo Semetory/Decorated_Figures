@@ -14,8 +14,12 @@ public class Rectangle extends Shape {
                      double strokeWidth) {
 
         super(fill, stroke, x, y, strokeWidth);
+
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
+        this.strokeWidth = strokeWidth;
     }
 
     @Override

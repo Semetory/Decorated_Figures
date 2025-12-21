@@ -1,5 +1,7 @@
 package com.example.task2fabrik;
 
+import com.example.task2fabrik.FloaderShape.Shape;
+import com.example.task2fabrik.FloaderShape.ShapeFactory;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -23,7 +25,7 @@ public class HelloController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Предупреждение");
             alert.setHeaderText(null);
-            alert.setContentText("Введено нечисло или число не из диапазона от 0 до 5!");
+            alert.setContentText("Введено нечисло или число не из диапазона от 0 до 8!");
             alert.showAndWait();
             return;
         }
@@ -39,6 +41,6 @@ public class HelloController {
     }
 
     private boolean checkWithRegExp(String text) {
-        return text.matches("[0-5]");
+        return text.matches("[0-8]");
     }
 }

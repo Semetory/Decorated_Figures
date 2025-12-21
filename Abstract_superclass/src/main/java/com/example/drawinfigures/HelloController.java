@@ -24,7 +24,7 @@ import java.util.List;
 public class HelloController {
 
     @FXML private Canvas canvas;
-    @FXML private Button b_circle, b_ellipse, b_rectangle, b_rounded_rectangle, b_square,saveButton;
+    @FXML private Button b_circle, b_ellipse, b_rectangle, b_rounded_rectangle, b_square, b_eraser, b_pen, b_lines, b_polygone, saveButton;
     @FXML private ColorPicker cPicker;
     @FXML private Slider thicknessSlider;
     @FXML private Button fill;
@@ -35,8 +35,10 @@ public class HelloController {
     private double startX, startY, endX, endY;
     private boolean isDrawing = false;
 
+    private PolyLine currentPath;
+
     private enum DrawMode {
-        NONE, PEN, ERASE, RECTANGLE, SQUARE, CIRCLE, ELLIPSE, ROUNDED_RECT
+        NONE, PEN, ERASE, RECTANGLE, SQUARE, CIRCLE, ELLIPSE, ROUNDED_RECT, LINE, POLYGON
     }
 
     @FXML
@@ -58,88 +60,105 @@ public class HelloController {
         startY = e.getY();
         isDrawing = true;
 
-        if (mode == DrawMode.PEN || mode == DrawMode.ERASE) {
-            gc().setLineWidth(thicknessSlider.getValue());
-            gc().setStroke(mode == DrawMode.ERASE ? Color.WHITE : cPicker.getValue());
-            gc().beginPath();
-            gc().moveTo(startX, startY);
-            gc().stroke();
+        if (mode == DrawMode.PEN) {
+            //новуя линию с выбранным цветом
+            currentPath = new PolyLine(cPicker.getValue(), startX, startY, thicknessSlider.getValue());
+        } else if (mode == DrawMode.ERASE) {
+            //ластик
+            currentPath = new PolyLine(Color.WHITE, startX, startY, thicknessSlider.getValue());
         }
     }
 
     private void onMouseDragged(MouseEvent e) {
         if (!isDrawing) return;
+
         endX = e.getX();
         endY = e.getY();
 
-        GraphicsContext g = gc();
-
-        switch (mode) {
-            case PEN -> {
-                g.lineTo(endX, endY);
-                g.stroke();
+        if (mode == DrawMode.PEN || mode == DrawMode.ERASE) {
+            if (currentPath != null) {
+                currentPath.addPoint(endX, endY);
+                //линия поверх текущего холста для плавности
+                currentPath.draw(gc());
             }
-            case ERASE -> {
-                g.setStroke(Color.WHITE);
-                g.setLineWidth(thicknessSlider.getValue());
-                g.lineTo(endX, endY);
-                g.stroke();
-            }
-            default -> redrawPreview();
+        } else {
+            //для прямоугольник, круг и т.д. вызываем превью
+            redrawPreview();
         }
     }
 
     private void onMouseReleased(MouseEvent e) {
         if (!isDrawing) return;
         isDrawing = false;
+
         endX = e.getX();
         endY = e.getY();
 
-        Shape s = switch (mode) {
-            case RECTANGLE -> new Rectangle(
-                    fillMode ? cPicker.getValue() : Color.TRANSPARENT,
-                    cPicker.getValue(),
-                    Math.min(startX, endX), Math.min(startY, endY),
-                    Math.abs(endX - startX), Math.abs(endY - startY),
-                    thicknessSlider.getValue()
-            );
-            case SQUARE -> {
-                double side = Math.min(Math.abs(endX - startX), Math.abs(endY - startY));
-                yield new Square(
+        Shape s = null;
+
+        //рисовали ручкой/ластиком, сохранение линии
+        if ((mode == DrawMode.PEN || mode == DrawMode.ERASE) && currentPath != null) {
+            s = currentPath;
+            currentPath = null;
+        } else {
+            //геометрические фигуры
+            s = switch (mode) {
+                case RECTANGLE -> new Rectangle(
                         fillMode ? cPicker.getValue() : Color.TRANSPARENT,
                         cPicker.getValue(),
-                        startX, startY, side, thicknessSlider.getValue()
+                        Math.min(startX, endX), Math.min(startY, endY),
+                        Math.abs(endX - startX), Math.abs(endY - startY),
+                        thicknessSlider.getValue()
                 );
-            }
-            case CIRCLE -> {
-                double radius = Math.hypot(endX - startX, endY - startY);
-                yield new Circle(
+                case SQUARE -> {
+                    double side = Math.min(Math.abs(endX - startX), Math.abs(endY - startY));
+                    yield new Square(
+                            fillMode ? cPicker.getValue() : Color.TRANSPARENT,
+                            cPicker.getValue(),
+                            startX, startY, side, thicknessSlider.getValue()
+                    );
+                }
+                case CIRCLE -> {
+                    double radius = Math.hypot(endX - startX, endY - startY);
+                    yield new Circle(
+                            fillMode ? cPicker.getValue() : Color.TRANSPARENT,
+                            cPicker.getValue(),
+                            startX - radius, startY - radius,
+                            radius, thicknessSlider.getValue()
+                    );
+                }
+                case ELLIPSE -> new Ellipse(
                         fillMode ? cPicker.getValue() : Color.TRANSPARENT,
                         cPicker.getValue(),
-                        startX - radius, startY - radius,
-                        radius, thicknessSlider.getValue()
+                        Math.min(startX, endX), Math.min(startY, endY),
+                        Math.abs(endX - startX), Math.abs(endY - startY),
+                        thicknessSlider.getValue()
                 );
-            }
-            case ELLIPSE -> new Ellipse(
-                    fillMode ? cPicker.getValue() : Color.TRANSPARENT,
-                    cPicker.getValue(),
-                    Math.min(startX, endX), Math.min(startY, endY),
-                    Math.abs(endX - startX), Math.abs(endY - startY),
-                    thicknessSlider.getValue()
-            );
-            case ROUNDED_RECT -> new RoundedRectangle(
-                    fillMode ? cPicker.getValue() : Color.TRANSPARENT,
-                    cPicker.getValue(),
-                    Math.min(startX, endX), Math.min(startY, endY),
-                    Math.abs(endX - startX), Math.abs(endY - startY),
-                    20, 20, thicknessSlider.getValue()
-            );
-            default -> null;
-        };
+                case ROUNDED_RECT -> new RoundedRectangle(
+                        fillMode ? cPicker.getValue() : Color.TRANSPARENT,
+                        cPicker.getValue(),
+                        Math.min(startX, endX), Math.min(startY, endY),
+                        Math.abs(endX - startX), Math.abs(endY - startY),
+                        20, 20, thicknessSlider.getValue()
+                );
+                case LINE -> new LineShape(
+                        cPicker.getValue(),
+                        startX, startY, endX, endY,
+                        thicknessSlider.getValue()
+                );
+                case POLYGON -> {
+                    double[] xPoints = { startX, endX, startX - (endX - startX) };
+                    double[] yPoints = { startY, endY, endY };
+                    yield new Polygon(fillMode ? cPicker.getValue() : Color.TRANSPARENT,
+                            cPicker.getValue(), xPoints, yPoints, 3, thicknessSlider.getValue());
+                }
+                default -> null;
+            };
+        }
 
         if (s != null) {
             shapes.add(s);
-            redraw();
+            redraw(); //Перерисовываем всё
         }
     }
 
@@ -173,6 +192,7 @@ public class HelloController {
                     Math.min(startX, endX), Math.min(startY, endY),
                     Math.abs(endX - startX), Math.abs(endY - startY)
             );
+            case LINE -> g.strokeLine(startX, startY, endX, endY); //gc1
             case ROUNDED_RECT -> g.strokeRoundRect(
                     Math.min(startX, endX), Math.min(startY, endY),
                     Math.abs(endX - startX), Math.abs(endY - startY),
@@ -182,6 +202,8 @@ public class HelloController {
     }
 
     @FXML private void onPen(ActionEvent e) { mode = DrawMode.PEN; }
+    @FXML private void onLine(ActionEvent e) { mode = DrawMode.LINE; }
+    @FXML private void onPolygon(ActionEvent e) { mode = DrawMode.POLYGON; }
     @FXML private void onEraser(ActionEvent e) { mode = DrawMode.ERASE; }
     @FXML private void onRectangleClick(ActionEvent e) { mode = DrawMode.RECTANGLE; }
     @FXML private void onCSquareClick(ActionEvent e) { mode = DrawMode.SQUARE; }
@@ -196,6 +218,7 @@ public class HelloController {
 
     @FXML
     private void saveCanvas(ActionEvent actionEvent) {
+
         WritableImage image = canvas.snapshot(null, null);
 
         FileChooser fileChooser = new FileChooser();
@@ -207,19 +230,17 @@ public class HelloController {
 
         if (file == null) return;
 
-        try {
-            savePngWithoutSwing(image, file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        try {savePngWithoutSwing(image, file);
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void savePngWithoutSwing(WritableImage img, File file) throws IOException {
+
         PixelReader reader = img.getPixelReader();
         int width = (int) img.getWidth();
         int height = (int) img.getHeight();
 
-        // Буфер для RGBA-пикселей
+        //Буфер для RGBA-пикселей
         byte[] buffer = new byte[width * height * 4];
         int index = 0;
 
@@ -227,7 +248,7 @@ public class HelloController {
             for (int x = 0; x < width; x++) {
                 int argb = reader.getArgb(x, y);
 
-                // PNG ожидает порядок RGBA, а не ARGB
+                //PNG ожидает порядок RGBA, а не ARGB
                 buffer[index++] = (byte) ((argb >> 16) & 0xFF); // R
                 buffer[index++] = (byte) ((argb >> 8) & 0xFF);  // G
                 buffer[index++] = (byte) (argb & 0xFF);         // B
@@ -239,5 +260,4 @@ public class HelloController {
             PngWriter.write(fos, width, height, buffer);
         }
     }
-
 }

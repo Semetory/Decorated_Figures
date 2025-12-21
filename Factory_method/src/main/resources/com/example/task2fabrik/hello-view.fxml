@@ -11,13 +11,15 @@
             fx:controller="com.example.task2fabrik.HelloController">
     <top>
         <FlowPane>
-            <Label text="Введите число сторон (0-5):"/>
+            <Label text="Введите число сторон (0-8):"/>
             <TextField fx:id="value1"/>
             <Button text="Нарисовать" onAction="#addPicker"/>
         </FlowPane>
     </top>
+
     <center>
         <Canvas fx:id="can" width="300" height="300"/>
     </center>
+
 </BorderPane>
 

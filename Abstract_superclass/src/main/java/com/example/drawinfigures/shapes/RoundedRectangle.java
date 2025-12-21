@@ -11,16 +11,21 @@ public class RoundedRectangle extends Shape {
     public double arcH;
 
     public RoundedRectangle(Color fill, Color stroke,
-                            double x, double y,
-                            double width, double height,
-                            double arcW, double arcH,
-                            double strokeWidth) {
+                            double x, double y, double width, double height,
+                            double arcW, double arcH, double strokeWidth) {
 
         super(fill, stroke, x, y, strokeWidth);
+
         this.width = width;
         this.height = height;
         this.arcW = arcW;
         this.arcH = arcH;
+
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.strokeWidth = strokeWidth;
     }
 
     @Override

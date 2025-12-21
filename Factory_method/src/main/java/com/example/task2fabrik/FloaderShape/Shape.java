@@ -1,4 +1,4 @@
-package com.example.task2fabrik;
+package com.example.task2fabrik.FloaderShape;
 
 import javafx.scene.canvas.GraphicsContext;
 

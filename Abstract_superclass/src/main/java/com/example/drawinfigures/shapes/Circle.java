@@ -8,12 +8,14 @@ public class Circle extends Shape {
     public double radius;
 
     public Circle(Color fill, Color stroke,
-                  double x, double y,
-                  double radius,
-                  double strokeWidth) {
+                  double x, double y, double radius, double strokeWidth) {
 
         super(fill, stroke, x, y, strokeWidth);
+
+        this.x = x;
+        this.y = y;
         this.radius = radius;
+        this.strokeWidth = strokeWidth;
     }
 
     @Override

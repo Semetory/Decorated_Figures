@@ -26,8 +26,6 @@ public class ShapeManager {
     }
 
     public void redraw(GraphicsContext gc) {
-        for (Shape shape : shapes) {
-            shape.draw(gc);
-        }
+        for (Shape shape : shapes) { shape.draw(gc); }
     }
 }

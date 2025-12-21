@@ -1,5 +1,6 @@
-package com.example.task2fabrik;
+package com.example.task2fabrik.Figures;
 
+import com.example.task2fabrik.FloaderShape.Shape;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
