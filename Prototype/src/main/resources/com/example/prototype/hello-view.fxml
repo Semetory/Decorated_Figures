@@ -3,11 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.canvas.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.Button?>
-
 <?import javafx.scene.paint.Color?>
+
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.prototype.HelloController"
@@ -17,37 +14,38 @@
         <FlowPane alignment="CENTER_LEFT" hgap="10" vgap="10"
                   style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
 
-            <!-- Блок выбора фигуры -->
             <VBox spacing="5">
-                <Label text="Фигура:"/>
+                <Label text="Выберите фигуру:"/>
                 <ListView fx:id="listView" prefWidth="150" prefHeight="100"/>
             </VBox>
 
-            <!-- Блок цвета заливки -->
             <VBox spacing="5">
-                <Label text="Цвет заливки:"/>
+                <Label text="Цвет внутренней заливки:"/>
                 <ColorPicker fx:id="colorPicker">
+                    <value>
+                        <Color red="0.0" green="0.0" blue="1.0" opacity="1.0"/>
+                    </value>
                 </ColorPicker>
             </VBox>
 
-            <!-- Блок контура -->
             <VBox spacing="5">
-                <Label text="Контур:"/>
                 <HBox spacing="5">
                     <VBox spacing="2">
-                        <Label text="Толщина:"/>
+                        <Label text="Толщина контура(1-10 px):"/>
                         <Slider fx:id="strokeSlider" min="1" max="10" value="1"
-                                prefWidth="80" showTickLabels="true"/>
+                                prefWidth="80" showTickLabels="true" showTickMarks="true"/>
                     </VBox>
                     <VBox spacing="2">
-                        <Label text="Цвет:"/>
+                        <Label text="Цвет границы:"/>
                         <ColorPicker fx:id="strokeColorPicker">
+                            <value>
+                                <Color red="0.0" green="0.0" blue="0.0" opacity="1.0"/>
+                            </value>
                         </ColorPicker>
                     </VBox>
                 </HBox>
             </VBox>
 
-            <!-- Блок тени -->
             <VBox spacing="5">
                 <Label text="Тень:"/>
                 <Button fx:id="shadowButton" text="Вкл. тень"
@@ -55,42 +53,46 @@
 
                 <HBox spacing="5">
                     <VBox spacing="2">
-                        <Label text="Радиус:"/>
+                        <Label text="Радиус размытия:"/>
                         <Slider fx:id="shadowRadiusSlider" prefWidth="80"
-                                min="0" max="30" value="10"/>
+                                min="0" max="30" value="10" showTickMarks="true"/>
                     </VBox>
                     <VBox spacing="2">
-                        <Label text="Цвет:"/>
+                        <Label text="Цвет тени:"/>
                         <ColorPicker fx:id="shadowColorPicker">
+                            <value>
+                                <Color red="0.5" green="0.5" blue="0.5" opacity="1.0"/>
+                            </value>
                         </ColorPicker>
                     </VBox>
                 </HBox>
 
                 <HBox spacing="5">
                     <VBox spacing="2">
-                        <Label text="Смещение X:"/>
+                        <Label text="Смещение X(горизонтали):"/>
                         <Slider fx:id="shadowOffsetXSlider" prefWidth="80"
-                                min="-20" max="20" value="5"/>
+                                min="-20" max="20" value="5" showTickMarks="true"/>
                     </VBox>
                     <VBox spacing="2">
-                        <Label text="Смещение Y:"/>
+                        <Label text="Смещение Y(вертикали):"/>
                         <Slider fx:id="shadowOffsetYSlider" prefWidth="80"
-                                min="-20" max="20" value="5"/>
+                                min="-20" max="20" value="5" showTickMarks="true"/>
                     </VBox>
                 </HBox>
             </VBox>
 
-            <!-- Блок управления -->
             <VBox spacing="5">
                 <Label text="Управление:"/>
-                <Button text="Очистить" onAction="#clearCanvas" prefWidth="80"/>
-                <Button text="Эффект" onAction="#addEffect" prefWidth="80"/>
+                <Button fx:id="clearButton" text="Очистить холст"
+                        onAction="#clearCanvas" prefWidth="180"/>
+
+                <Button fx:id="effectButton" text="Применить эффект"
+                        onAction="#addEffect" prefWidth="180"/>
             </VBox>
 
-            <!-- Информация -->
             <VBox spacing="5">
                 <Label fx:id="shapeNameLabel" text="Фигура: не выбрана"
-                       style="-fx-font-weight: bold;"/>
+                       style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
                 <Label text="Кликните на холст для рисования"/>
             </VBox>
 
@@ -98,9 +100,8 @@
     </top>
 
     <center>
-        <Canvas fx:id="canvas" onMouseClicked="#drawShape"
-                height="550" width="900"
-                style="-fx-background-color: white; -fx-border-color: #ccc; -fx-border-width: 1;"/>
+        <Canvas fx:id="canvas" onMouseClicked="#drawShape" height="550" width="1280"
+                style="-fx-background-color: white; -fx-border-color: #ccc; -fx-border-width: 2;"/>
     </center>
 
 </BorderPane>

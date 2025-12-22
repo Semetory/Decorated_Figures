@@ -10,23 +10,27 @@ public class Square extends Shape {
     public void draw(GraphicsContext gc, double x, double y) {
         this.x = x;
         this.y = y;
+
         gc.setFill(color);
         gc.fillRect(x - side/2, y - side/2, side, side);
+
+        gc.setStroke(strokeColor);
+        gc.setLineWidth(strokeWidth);
+        gc.strokeRect(x - side/2, y - side/2, side, side);
     }
 
     @Override
-    public String toString() {
-        return "Квадрат";
-    }
+    public String toString() { return "Квадрат"; }
 
     @Override
-    public void setColor(Color color) {
-        this.color = color;
-    }
+    public void setColor(Color color) { this.color = color; }
 
     @Override
     public void setXY(double x, double y) {
         this.x = x;
         this.y = y;
     }
+
+    public double getSide() { return side; }
+    public void setSide(double side) { this.side = side; }
 }

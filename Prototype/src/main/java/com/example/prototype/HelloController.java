@@ -1,5 +1,6 @@
 package com.example.prototype;
 
+import com.example.prototype.shapes.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,73 +17,83 @@ import java.util.ResourceBundle;
 
 public class HelloController implements Initializable {
 
-    @FXML
-    private ListView<String> listView;
-
-    @FXML
-    private Canvas canvas;
-
-    @FXML
-    private ColorPicker colorPicker;
-
-    @FXML
-    private ColorPicker strokeColorPicker;
-
-    @FXML
-    private Slider strokeSlider;
-
-    @FXML
-    private Label shapeNameLabel;
-
-    @FXML
-    private Button shadowButton;
-
-    @FXML
-    private Slider shadowRadiusSlider;
-
-    @FXML
-    private Slider shadowOffsetXSlider;
-
-    @FXML
-    private Slider shadowOffsetYSlider;
-
-    @FXML
-    private ColorPicker shadowColorPicker;
+    @FXML private ListView<Shape> listView;
+    @FXML private Canvas canvas;
+    @FXML private ColorPicker colorPicker;
+    @FXML private ColorPicker strokeColorPicker;
+    @FXML private Slider strokeSlider;
+    @FXML private Label shapeNameLabel;
+    @FXML private Button shadowButton;
+    @FXML private Slider shadowRadiusSlider;
+    @FXML private Slider shadowOffsetXSlider;
+    @FXML private Slider shadowOffsetYSlider;
+    @FXML private ColorPicker shadowColorPicker;
+    @FXML private Button clearButton;
+    @FXML private Button effectButton;
 
     private GraphicsContext gc;
     private boolean shadowEnabled = false;
     private DropShadow shadowEffect;
-
-    // Список доступных фигур
-    private final String[] shapes = {"Круг", "Квадрат", "Прямоугольник", "Треугольник"};
+    private ObservableList<Shape> shapesList;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Инициализация графического контекста
         gc = canvas.getGraphicsContext2D();
 
-        // Инициализация эффекта тени
         shadowEffect = new DropShadow();
         shadowEffect.setColor(Color.GRAY);
         shadowEffect.setRadius(10);
         shadowEffect.setOffsetX(5);
         shadowEffect.setOffsetY(5);
 
-        // Заполнение ListView простыми строками
-        ObservableList<String> items = FXCollections.observableArrayList(shapes);
-        listView.setItems(items);
+        //Создаем прототипы фигур
+        Circle circlePrototype = new Circle();
+        circlePrototype.setColor(Color.RED);
+
+        Square squarePrototype = new Square();
+        squarePrototype.setColor(Color.BLUE);
+
+        Rectangle rectanglePrototype = new Rectangle();
+        rectanglePrototype.setColor(Color.GREEN);
+
+        Triangle trianglePrototype = new Triangle();
+        trianglePrototype.setColor(Color.ORANGE);
+
+        //Заполняем список прототипами
+        shapesList = FXCollections.observableArrayList(
+                circlePrototype,
+                squarePrototype,
+                rectanglePrototype,
+                trianglePrototype
+        );
+
+        //Настраиваем ListView
+        listView.setItems(shapesList);
         listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        // Установка обработчика выбора
+        //Устанавливаем фабрику ячеек для отображения названий фигур
+        listView.setCellFactory(lv -> new ListCell<Shape>() {
+            @Override
+            protected void updateItem(Shape item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.toString());
+                }
+            }
+        });
+
+        //Обработчик выбора фигуры
         listView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     if (newValue != null) {
-                        shapeNameLabel.setText("Фигура: " + newValue);
+                        shapeNameLabel.setText("Выбрано: " + newValue.toString());
                     }
                 }
         );
 
-        // Настройка слайдеров тени
+        //Настраиваем слайдеры тени
         shadowRadiusSlider.setMin(0);
         shadowRadiusSlider.setMax(30);
         shadowRadiusSlider.setValue(10);
@@ -95,7 +106,7 @@ public class HelloController implements Initializable {
         shadowOffsetYSlider.setMax(20);
         shadowOffsetYSlider.setValue(5);
 
-        // Обработчики для слайдеров тени
+        //Обработчики для слайдеров тени
         shadowRadiusSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             shadowEffect.setRadius(newValue.doubleValue());
         });
@@ -108,10 +119,15 @@ public class HelloController implements Initializable {
             shadowEffect.setOffsetY(newValue.doubleValue());
         });
 
-        // Обработчик для цвета тени
+        //Обработчик для цвета тени
         shadowColorPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
             shadowEffect.setColor(newValue);
         });
+
+        //Выбираем первую фигуру по умолчанию
+        if (!shapesList.isEmpty()) {
+            listView.getSelectionModel().select(0);
+        }
     }
 
     @FXML
@@ -119,109 +135,52 @@ public class HelloController implements Initializable {
         int index = listView.getSelectionModel().getSelectedIndex();
 
         if (index >= 0) {
-            // Получаем выбранную фигуру
-            String shapeType = listView.getSelectionModel().getSelectedItem();
+            //Получаем прототип из списка
+            Shape prototype = listView.getSelectionModel().getSelectedItem();
 
-            // Настройка цвета заливки
-            gc.setFill(colorPicker.getValue());
+            //Клонируем прототип с исп паттерна Прототип
+            Shape clonedShape = (Shape) prototype.clone();
 
-            // Настройка контура
-            gc.setStroke(strokeColorPicker.getValue());
-            gc.setLineWidth(strokeSlider.getValue());
+            //Настраиваем клонированную фигуру
+            clonedShape.setColor(colorPicker.getValue());
+            clonedShape.setStrokeColor(strokeColorPicker.getValue());
+            clonedShape.setStrokeWidth(strokeSlider.getValue());
+            clonedShape.setXY(mouseEvent.getX(), mouseEvent.getY());
 
-            double x = mouseEvent.getX();
-            double y = mouseEvent.getY();
+            //Сохраняем состояние GraphicsContext
+            gc.save();
 
-            // Рисование выбранной фигуры
-            switch (shapeType) {
-                case "Круг":
-                    drawCircle(x, y);
-                    break;
-                case "Квадрат":
-                    drawSquare(x, y);
-                    break;
-                case "Прямоугольник":
-                    drawRectangle(x, y);
-                    break;
-                case "Треугольник":
-                    drawTriangle(x, y);
-                    break;
+            //Если тень включена, применяем эффект
+            if (shadowEnabled) {
+                //эффект тени
+                DropShadow shadow = new DropShadow();
+                shadow.setColor(shadowColorPicker.getValue());
+                shadow.setRadius(shadowRadiusSlider.getValue());
+                shadow.setOffsetX(shadowOffsetXSlider.getValue());
+                shadow.setOffsetY(shadowOffsetYSlider.getValue());
+
+                //Применяем эффект для GraphicsContext
+                gc.setEffect(shadow);
             }
-        }
-    }
 
-    private void drawCircle(double x, double y) {
-        double radius = 30;
+            //вывод основную клонированную фигуру
+            clonedShape.draw(gc, clonedShape.getX(), clonedShape.getY());
 
-        // Если тень включена, рисуем сначала тень
-        if (shadowEnabled) {
-            gc.save(); // Сохраняем текущее состояние
-            gc.setEffect(shadowEffect);
-            gc.setFill(shadowColorPicker.getValue());
-            gc.fillOval(x - radius, y - radius, radius * 2, radius * 2);
-            gc.restore(); // Восстанавливаем состояние
-        }
+            //убираем эффект
+            gc.setEffect(null);
 
-        // Рисуем основную фигуру
-        gc.setFill(colorPicker.getValue());
-        gc.fillOval(x - radius, y - radius, radius * 2, radius * 2);
-        gc.strokeOval(x - radius, y - radius, radius * 2, radius * 2);
-    }
-
-    private void drawSquare(double x, double y) {
-        double side = 40;
-
-        if (shadowEnabled) {
-            gc.save();
-            gc.setEffect(shadowEffect);
-            gc.setFill(shadowColorPicker.getValue());
-            gc.fillRect(x - side/2, y - side/2, side, side);
+            //восстанавл состояние GraphicsContext
             gc.restore();
-        }
 
-        gc.setFill(colorPicker.getValue());
-        gc.fillRect(x - side/2, y - side/2, side, side);
-        gc.strokeRect(x - side/2, y - side/2, side, side);
-    }
-
-    private void drawRectangle(double x, double y) {
-        double width = 60;
-        double height = 40;
-
-        if (shadowEnabled) {
-            gc.save();
-            gc.setEffect(shadowEffect);
-            gc.setFill(shadowColorPicker.getValue());
-            gc.fillRect(x - width/2, y - height/2, width, height);
-            gc.restore();
-        }
-
-        gc.setFill(colorPicker.getValue());
-        gc.fillRect(x - width/2, y - height/2, width, height);
-        gc.strokeRect(x - width/2, y - height/2, width, height);
-    }
-
-    private void drawTriangle(double x, double y) {
-        double side = 40;
-        double[] xPoints = {x, x - side/2, x + side/2};
-        double[] yPoints = {y - side/2, y + side/2, y + side/2};
-
-        if (shadowEnabled) {
-            gc.save();
-            gc.setEffect(shadowEffect);
-            gc.setFill(shadowColorPicker.getValue());
-            gc.fillPolygon(xPoints, yPoints, 3);
-            gc.restore();
-        }
-
-        gc.setFill(colorPicker.getValue());
-        gc.fillPolygon(xPoints, yPoints, 3);
-        gc.strokePolygon(xPoints, yPoints, 3);
+            //Обновляем информацию о фигуре
+            shapeNameLabel.setText("Нарисован: " + clonedShape.toString());
+        } else { shapeNameLabel.setText("Выберите фигуру из списка!"); }
     }
 
     @FXML
     public void clearCanvas() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        shapeNameLabel.setText("Холст очищен");
     }
 
     @FXML
@@ -243,10 +202,22 @@ public class HelloController implements Initializable {
     public void addEffect() {
         int index = listView.getSelectionModel().getSelectedIndex();
         if (index >= 0) {
-            String shapeType = listView.getSelectionModel().getSelectedItem();
-            shapeNameLabel.setText("Эффект добавлен к: " + shapeType);
+            Shape shape = listView.getSelectionModel().getSelectedItem();
 
-            // Здесь можно добавить дополнительную логику для эффектов
+            if (shape instanceof Circle) {
+                ((Circle) shape).setRadius(40);
+                shapeNameLabel.setText("Эффект: увеличен размер круга");
+            } else if (shape instanceof Square) {
+                ((Square) shape).setSide(50);
+                shapeNameLabel.setText("Эффект: увеличен размер квадрата");
+            } else if (shape instanceof Triangle) {
+                ((Triangle) shape).setSide(80);
+                shapeNameLabel.setText("Эффект: увеличен размер триугольника");
+            } else if (shape instanceof Rectangle) {
+                ((Rectangle) shape).setDimensions(100, 100);
+                shapeNameLabel.setText("Эффект: увеличен размер приямоугольника");
+            }
+            listView.refresh();
         }
     }
 }
